@@ -27,19 +27,16 @@ abstract class Js2dGeneratorTaskBase<ConfigType> @Inject constructor(
     abstract var uuid: UUID
 
     @get:Classpath
-    val js2dConfiguration: Provider<out FileCollection> =
-        project.configurations.named(JS2D_CONFIGURATION_NAME)
+    protected val js2dConfiguration: FileCollection = project.configurations.named(JS2D_CONFIGURATION_NAME).get()
 
     @get:Classpath
-    val js2dConfigurationPlugins: Provider<out FileCollection> = project.configurations.named(
-        JS2D_PLUGINS_CONFIGURATION_NAME,
-    )
+    protected val js2dConfigurationPlugins: FileCollection = project.configurations.named(JS2D_PLUGINS_CONFIGURATION_NAME).get()
 
     abstract fun submit(workQueue: WorkQueue)
 
     @TaskAction
     fun action() {
-        val workerClassPath = js2dConfiguration.get() + js2dConfigurationPlugins
+        val workerClassPath = js2dConfiguration + js2dConfigurationPlugins
         val workQueue = workerExecutor.processIsolation {
             // Set encoding (work-around for https://github.com/gradle/gradle/issues/13843)
             // TODO: fixed in Gradle 8.3
